@@ -1,6 +1,7 @@
 package pers.simuel.trpc.entity;
 
 import lombok.Data;
+import pers.simuel.trpc.enumeration.ResponseCode;
 
 import java.io.Serializable;
 

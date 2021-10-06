@@ -18,5 +18,13 @@ public interface CommonSerializer {
     // 序列化方法
     <T> byte[] serialize(T object);
 
+    static CommonSerializer getByType(int type) {
+        switch (type) {
+            case JSON_TYPE:
+                return new JSONSerializer();
+            default:
+                return new JDKSerializer();
+        }
+    }
 
 }

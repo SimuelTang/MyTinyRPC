@@ -1,8 +1,8 @@
 package pers.simuel.trpc.server.registry;
 
 import lombok.extern.slf4j.Slf4j;
-import pers.simuel.trpc.server.exceptions.RPCError;
-import pers.simuel.trpc.server.exceptions.RPCException;
+import pers.simuel.trpc.exceptions.RPCError;
+import pers.simuel.trpc.exceptions.RPCException;
 
 import java.util.Map;
 import java.util.Set;

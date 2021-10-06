@@ -3,7 +3,7 @@ package pers.simuel.trpc.server.handler;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.trpc.entity.RPCRequest;
 import pers.simuel.trpc.entity.RPCResponse;
-import pers.simuel.trpc.entity.ResponseCode;
+import pers.simuel.trpc.enumeration.ResponseCode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package pers.simuel.trpc.server.exceptions;
+package pers.simuel.trpc.exceptions;
 
 /**
  * @Author simuel_tang

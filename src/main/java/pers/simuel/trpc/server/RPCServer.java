@@ -27,7 +27,7 @@ public class RPCServer {
     private final static int BLOCKING_QUEUE_CAPACITY = 100;
     private final ExecutorService threadPool;
     private final ServiceRegistry serviceRegistry;
-    private RequestHandler requestHandler = new RequestHandler();
+    private final RequestHandler requestHandler = new RequestHandler();
 
     public RPCServer(ServiceRegistry serviceRegistry) {
         BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);

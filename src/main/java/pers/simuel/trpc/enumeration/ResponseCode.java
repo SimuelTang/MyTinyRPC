@@ -1,4 +1,4 @@
-package pers.simuel.trpc.entity;
+package pers.simuel.trpc.enumeration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
