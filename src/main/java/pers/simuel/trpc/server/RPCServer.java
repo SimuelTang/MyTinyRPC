@@ -3,6 +3,8 @@ package pers.simuel.trpc.server;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.trpc.entity.RPCRequest;
 import pers.simuel.trpc.entity.RPCResponse;
+import pers.simuel.trpc.server.handler.RequestHandler;
+import pers.simuel.trpc.server.registry.ServiceRegistry;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,26 +21,36 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class RPCServer {
+    private final static int CORE_POOL_SIZE = 5;
+    private final static int MAXIMUM_POOL_SIZE = 50;
+    private final static long KEEP_ALIVE_TIME = 60;
+    private final static int BLOCKING_QUEUE_CAPACITY = 100;
     private final ExecutorService threadPool;
+    private final ServiceRegistry serviceRegistry;
+    private RequestHandler requestHandler = new RequestHandler();
 
-    public RPCServer() {
-        int corePoolSize = 5;
-        int maximumPoolSize = 50;
-        long keepAliveTime = 60;
-        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(100);
+    public RPCServer(ServiceRegistry serviceRegistry) {
+        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime,
+        this.threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME,
                 TimeUnit.SECONDS, workingQueue, threadFactory);
+        this.serviceRegistry = serviceRegistry;
     }
 
-    public void register(Object service, int port) {
+    /**
+     * 服务端主线程只负责启动，注册功能交由另外的线程处理
+     *
+     * @param port
+     */
+    public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             log.info("服务器正在启动...");
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
                 log.info("成功与客户端建立连接，Ip为：" + socket.getInetAddress());
-                threadPool.execute(new WorkerThread(socket, service));
+                threadPool.execute(new WorkerThread(socket, requestHandler, serviceRegistry));
             }
+            threadPool.shutdown();
         } catch (IOException e) {
             log.error("连接时有错误发生：", e);
         }
@@ -46,11 +58,13 @@ public class RPCServer {
 
     static class WorkerThread implements Runnable {
         private final Socket socket;
-        private final Object service;
+        private final ServiceRegistry serviceRegistry;
+        private final RequestHandler requestHandler;
 
-        public WorkerThread(Socket socket, Object service) {
+        public WorkerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
             this.socket = socket;
-            this.service = service;
+            this.requestHandler = requestHandler;
+            this.serviceRegistry = serviceRegistry;
         }
 
         @Override
@@ -59,10 +73,12 @@ public class RPCServer {
                  ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
                 // 获取请求对象
                 RPCRequest rpcRequest = (RPCRequest) ois.readObject();
-                // 获取待调用的方法
-                Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParaTypes());
-                // 通过反射调用方法
-                Object rtnValue = method.invoke(service, rpcRequest.getParameters());
+                // 获取客户端需要调用的接口
+                String interfaceName = rpcRequest.getInterfaceName();
+                // 找到服务端对应的服务
+                Object service = serviceRegistry.getService(interfaceName);
+                // 交由处理器处理并获取结果
+                Object rtnValue = requestHandler.handle(rpcRequest, service);
                 // 将结果作为响应发送给客户端
                 oos.writeObject(RPCResponse.success(rtnValue));
                 oos.flush();

@@ -1,4 +1,4 @@
-package pers.simuel.trpc.server;
+package pers.simuel.trpc.server.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.trpc.common.Product;

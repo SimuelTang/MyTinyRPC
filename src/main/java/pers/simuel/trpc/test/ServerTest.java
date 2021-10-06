@@ -1,7 +1,9 @@
 package pers.simuel.trpc.test;
 
 import pers.simuel.trpc.server.RPCServer;
-import pers.simuel.trpc.server.SaleServiceImpl;
+import pers.simuel.trpc.server.impl.SaleServiceImpl;
+import pers.simuel.trpc.server.registry.DefaultServiceRegistry;
+import pers.simuel.trpc.server.registry.ServiceRegistry;
 
 /**
  * @Author simuel_tang
@@ -10,7 +12,9 @@ import pers.simuel.trpc.server.SaleServiceImpl;
  */
 public class ServerTest {
     public static void main(String[] args) {
-        final RPCServer rpcServer = new RPCServer();
-        rpcServer.register(new SaleServiceImpl(), 9000);
+        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+        serviceRegistry.registry(new SaleServiceImpl());
+        final RPCServer rpcServer = new RPCServer(serviceRegistry);
+        rpcServer.start(9000);
     }
 }

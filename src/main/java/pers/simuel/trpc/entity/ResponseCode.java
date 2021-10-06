@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ResponseCode {
     
     SUCCESS(200, "OK"),
-    ERROR(500, "Error");
+    ERROR(500, "Error"),
+    METHOD_NOT_FOUND(400, "Method not found");
     
     int code;
     String message;
