@@ -14,12 +14,10 @@ import java.lang.reflect.Proxy;
  */
 public class RPCClientProxy implements InvocationHandler {
 
-    private final String host;
-    private final Integer port;
+    private final RPCClient rpcClient;
 
-    public RPCClientProxy(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public RPCClientProxy(RPCClient rpcClient) {
+        this.rpcClient = rpcClient;
     }
 
     @SuppressWarnings("unchecked")
@@ -37,7 +35,6 @@ public class RPCClientProxy implements InvocationHandler {
                 .paraTypes(method.getParameterTypes())
                 .build();
         // 发送request对象并获取结果
-        RPCClient rpcClient = new RPCClient();
-        return ((RPCResponse<?>) rpcClient.sendRequest(rpcRequest, host, port)).getData();
+        return ((RPCResponse<?>) rpcClient.sendRequest(rpcRequest)).getData();
     }
 }

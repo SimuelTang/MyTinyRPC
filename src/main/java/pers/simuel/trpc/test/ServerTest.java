@@ -1,6 +1,6 @@
 package pers.simuel.trpc.test;
 
-import pers.simuel.trpc.server.RPCServer;
+import pers.simuel.trpc.server.SocketServer;
 import pers.simuel.trpc.server.impl.SaleServiceImpl;
 import pers.simuel.trpc.server.registry.DefaultServiceRegistry;
 import pers.simuel.trpc.server.registry.ServiceRegistry;
@@ -14,7 +14,7 @@ public class ServerTest {
     public static void main(String[] args) {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.registry(new SaleServiceImpl());
-        final RPCServer rpcServer = new RPCServer(serviceRegistry);
+        final SocketServer rpcServer = new SocketServer(serviceRegistry);
         rpcServer.start(9000);
     }
 }

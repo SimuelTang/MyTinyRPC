@@ -1,6 +1,7 @@
 package pers.simuel.trpc.test;
 
 import pers.simuel.trpc.client.RPCClientProxy;
+import pers.simuel.trpc.client.SocketClient;
 import pers.simuel.trpc.common.Product;
 import pers.simuel.trpc.common.SaleService;
 
@@ -11,7 +12,7 @@ import pers.simuel.trpc.common.SaleService;
  */
 public class ClientTest {
     public static void main(String[] args) {
-        final RPCClientProxy proxy = new RPCClientProxy("localhost", 9000);
+        final RPCClientProxy proxy = new RPCClientProxy(new SocketClient("localhost", 9000));
         final SaleService saleService = proxy.getProxy(SaleService.class);
         final Product product = new Product("apple", 10);
         final String res = saleService.buy(product);
