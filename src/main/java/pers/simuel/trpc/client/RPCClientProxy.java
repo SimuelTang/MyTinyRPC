@@ -20,7 +20,6 @@ public class RPCClientProxy implements InvocationHandler {
         this.rpcClient = rpcClient;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }

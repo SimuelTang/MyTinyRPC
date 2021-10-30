@@ -14,7 +14,7 @@ public class ServerTest {
     public static void main(String[] args) {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.registry(new SaleServiceImpl());
-        final SocketServer rpcServer = new SocketServer(serviceRegistry);
-        rpcServer.start(9000);
+        SocketServer rpcServer = new SocketServer(serviceRegistry);
+        rpcServer.start();
     }
 }

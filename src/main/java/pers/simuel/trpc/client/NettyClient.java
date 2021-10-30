@@ -11,7 +11,14 @@ import pers.simuel.trpc.codec.CommonDecoder;
 import pers.simuel.trpc.codec.CommonEncoder;
 import pers.simuel.trpc.entity.RPCRequest;
 import pers.simuel.trpc.entity.RPCResponse;
+import pers.simuel.trpc.exceptions.RPCError;
+import pers.simuel.trpc.exceptions.RPCException;
+import pers.simuel.trpc.registry.NacosServiceRegistry;
+import pers.simuel.trpc.registry.ServiceRegistry;
+import pers.simuel.trpc.serializers.CommonSerializer;
 import pers.simuel.trpc.serializers.JDKSerializer;
+
+import java.net.InetSocketAddress;
 
 /**
  * @Author simuel_tang
@@ -21,13 +28,13 @@ import pers.simuel.trpc.serializers.JDKSerializer;
 @Slf4j
 public class NettyClient implements RPCClient {
 
-    private final String host;
-    private final int port;
-    private static final Bootstrap bootstrap;
 
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    private static final Bootstrap bootstrap;
+    private CommonSerializer serializer;
+    private final ServiceRegistry serviceRegistry;
+
+    public NettyClient() {
+        this.serviceRegistry = new NacosServiceRegistry();
     }
 
     static {
@@ -49,11 +56,17 @@ public class NettyClient implements RPCClient {
 
     @Override
     public Object sendRequest(RPCRequest rpcRequest) {
+        if(serializer == null) {
+            log.error("未设置序列化器");
+            throw new RPCException(RPCError.SERIALIZER_NOT_FOUND);
+        }
         try {
-            ChannelFuture future = bootstrap.connect(host, port).sync();
-            log.info("客户端连接到服务器:{}, {}", host, port);
-            Channel channel = future.channel();
-            if (channel != null) {
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            Channel channel = ChannelProvider.get(inetSocketAddress, new JDKSerializer());
+//            ChannelFuture future = bootstrap.connect(host, port).sync();
+//            log.info("客户端连接到服务器:{}, {}", host, port);
+//            Channel channel = future.channel();
+            if (channel.isActive()) {
                 channel.writeAndFlush(rpcRequest)
                         .addListener(future1 -> {
                             if (future1.isSuccess()) {
@@ -72,4 +85,10 @@ public class NettyClient implements RPCClient {
         }
         return null;
     }
+    
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
+    }
+    
+    
 }

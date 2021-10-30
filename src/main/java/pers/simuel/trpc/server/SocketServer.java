@@ -42,8 +42,8 @@ public class SocketServer implements RPCServer {
      *
      * @param port
      */
-    public void start(int port) {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+    public void start() {
+        try (ServerSocket serverSocket = new ServerSocket(24914)) {
             log.info("服务器正在启动...");
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
@@ -54,6 +54,12 @@ public class SocketServer implements RPCServer {
         } catch (IOException e) {
             log.error("连接时有错误发生：", e);
         }
+    }
+
+  
+    @Override
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        
     }
 
     static class WorkerThread implements Runnable {
