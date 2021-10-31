@@ -39,8 +39,6 @@ public class SocketServer implements RPCServer {
 
     /**
      * 服务端主线程只负责启动，注册功能交由另外的线程处理
-     *
-     * @param port
      */
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(24914)) {
@@ -79,9 +77,9 @@ public class SocketServer implements RPCServer {
                  ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
                 // 获取请求对象
                 RPCRequest rpcRequest = (RPCRequest) ois.readObject();
-                // 获取客户端需要调用的接口
+                // 通过对象获取客户端需要调用的接口
                 String interfaceName = rpcRequest.getInterfaceName();
-                // 找到服务端对应的服务
+                // 通过接口名字找到服务端对应的服务
                 Object service = serviceRegistry.getService(interfaceName);
                 // 交由处理器处理并获取结果
                 Object rtnValue = requestHandler.handle(rpcRequest, service);

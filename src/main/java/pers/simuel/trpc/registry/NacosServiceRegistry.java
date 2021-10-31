@@ -15,6 +15,7 @@ import java.util.List;
  * @Author simuel_tang
  * @Date 2021/10/29
  * @Time 10:53
+ * 提供服务注册和服务发现功能
  */
 @Slf4j
 public class NacosServiceRegistry implements ServiceRegistry {

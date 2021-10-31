@@ -13,6 +13,7 @@ import pers.simuel.trpc.codec.CommonDecoder;
 import pers.simuel.trpc.codec.CommonEncoder;
 import pers.simuel.trpc.exceptions.RPCError;
 import pers.simuel.trpc.exceptions.RPCException;
+import pers.simuel.trpc.hook.ShutdownHook;
 import pers.simuel.trpc.provider.ServiceProvider;
 import pers.simuel.trpc.provider.ServiceProviderImpl;
 import pers.simuel.trpc.registry.NacosServiceRegistry;
@@ -43,7 +44,6 @@ public class NettyServer implements RPCServer {
         serviceProvider = new ServiceProviderImpl();
     }
 
-
     @Override
     public void start() {
         EventLoopGroup boss = new NioEventLoopGroup();
@@ -66,6 +66,8 @@ public class NettyServer implements RPCServer {
                         }
                     });
             ChannelFuture future = serverBootstrap.bind(port).sync();
+            // 启动时添加钩子
+            ShutdownHook.getShutdownHook().addClearAllHook();
             future.channel().closeFuture().sync();
         } catch (Exception e) {
             log.error("服务端启动发生错误", e);
