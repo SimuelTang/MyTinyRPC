@@ -11,16 +11,17 @@ import lombok.Data;
 @AllArgsConstructor
 public enum ResponseStatus {
     SUCCESS("调用方法成功", 200),
-    Failure("调用方法失败", 500);
-    
+    Failure("调用方法失败", 500),
+    METHOD_NOT_FOUND("找不到该方法", 404);
+
     public int getCode() {
         return code;
     }
-    
+
     public String getMessage() {
         return msg;
     }
-    
+
     String msg;
     int code;
 }

@@ -14,12 +14,12 @@ import java.lang.reflect.Proxy;
  * @Time 10:57
  */
 @Slf4j
-public class ClientProxy implements InvocationHandler {
+public class RPCClientProxy implements InvocationHandler {
 
     private final String host;
     private final Integer port;
 
-    public ClientProxy(String host, int port) {
+    public RPCClientProxy(String host, int port) {
         this.host = host;
         this.port = port;
     }

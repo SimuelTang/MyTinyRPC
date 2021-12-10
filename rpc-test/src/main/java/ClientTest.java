@@ -1,4 +1,4 @@
-import pers.simuel.rpc.ClientProxy;
+import pers.simuel.rpc.RPCClientProxy;
 import pers.simuel.rpc.service.HelloObject;
 import pers.simuel.rpc.service.HelloService;
 
@@ -9,7 +9,7 @@ import pers.simuel.rpc.service.HelloService;
  */
 public class ClientTest {
     public static void main(String[] args) {
-        ClientProxy proxy = new ClientProxy("localhost", 9000);
+        RPCClientProxy proxy = new RPCClientProxy("localhost", 9000);
         HelloService helloService = proxy.getProxy(HelloService.class);
         String ret = helloService.sayHello(new HelloObject(1, "saber"));
         System.out.println(ret);

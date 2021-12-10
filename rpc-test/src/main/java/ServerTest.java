@@ -1,4 +1,6 @@
 import pers.simuel.rpc.HelloServiceImpl;
+import pers.simuel.rpc.registry.ServiceRegistry;
+import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
 import pers.simuel.rpc.server.RPCServer;
 
 /**
@@ -8,7 +10,9 @@ import pers.simuel.rpc.server.RPCServer;
  */
 public class ServerTest {
     public static void main(String[] args) {
-        RPCServer rpcServer = new RPCServer();
-        rpcServer.register(new HelloServiceImpl(), 9000);
+        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+        serviceRegistry.registry(new HelloServiceImpl());
+        RPCServer rpcServer = new RPCServer(9000, serviceRegistry);
+        rpcServer.start();
     }
 }
