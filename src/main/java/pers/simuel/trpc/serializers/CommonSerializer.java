@@ -8,6 +8,7 @@ package pers.simuel.trpc.serializers;
 public interface CommonSerializer {
     int JDK_TYPE = 0;
     int JSON_TYPE = 1;
+    int PROTOBUF_TYPE = 2;
 
     // 字类根据自己的实现返回对应的序列化类型即可
     int getSerializeType();
