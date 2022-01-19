@@ -1,6 +1,7 @@
 package pers.simuel.rpc.client;
 
 import pers.simuel.rpc.RPCClientProxy;
+import pers.simuel.rpc.client.impl.SocketClient;
 import pers.simuel.rpc.service.HelloObject;
 import pers.simuel.rpc.service.HelloService;
 

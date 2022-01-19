@@ -1,13 +1,11 @@
 package pers.simuel.rpc.handler;
 
 import io.netty.channel.*;
-import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.extern.slf4j.Slf4j;
-import pers.simuel.rpc.enums.ResponseStatus;
 import pers.simuel.rpc.protocol.RPCRequest;
 import pers.simuel.rpc.protocol.RPCResponse;
-import pers.simuel.rpc.registry.ServiceRegistry;
-import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
+import pers.simuel.rpc.provider.ServiceProvider;
+import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
 
 /**
  * 采用SimpleChannelInboundHandler是因为它会自动释放资源
@@ -20,7 +18,7 @@ import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
 public class NettyServerHandler extends SimpleChannelInboundHandler<RPCRequest> {
 
     // 用于通过接口获取注册的服务
-    private final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+    private final ServiceProvider serviceProvider = new DefaultServiceProvider();
     // 请求处理器
     private final RequestHandler requestHandler = new RequestHandler();
 
@@ -28,7 +26,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RPCRequest> 
     protected void channelRead0(ChannelHandlerContext ctx, RPCRequest request) throws Exception {
         log.info("服务端收到请求:{}", request);
         String interfaceName = request.getInterfaceName();
-        Object service = serviceRegistry.getService(interfaceName);
+        Object service = serviceProvider.getServiceProvider(interfaceName);
         Object ret = requestHandler.handle(request, service);
         ChannelFuture future = ctx.writeAndFlush(RPCResponse.success(ret));
         future.addListener(ChannelFutureListener.CLOSE);

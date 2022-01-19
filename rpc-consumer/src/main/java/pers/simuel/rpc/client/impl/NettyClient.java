@@ -1,4 +1,4 @@
-package pers.simuel.rpc.client;
+package pers.simuel.rpc.client.impl;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -7,12 +7,17 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import pers.simuel.rpc.client.RPCClient;
 import pers.simuel.rpc.codec.CommonDecoder;
 import pers.simuel.rpc.codec.CommonEncoder;
 import pers.simuel.rpc.handler.NettyClientHandler;
 import pers.simuel.rpc.protocol.RPCRequest;
 import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.registry.ServiceRegistry;
+import pers.simuel.rpc.registry.impl.NacosServiceRegistry;
 import pers.simuel.rpc.serializer.JDKSerializer;
+
+import java.net.InetSocketAddress;
 
 /**
  * 通过Netty与作为通信方式的消费端
@@ -23,11 +28,10 @@ import pers.simuel.rpc.serializer.JDKSerializer;
  */
 @Slf4j
 public class NettyClient implements RPCClient {
-    
-    private final String host;
-    private final int port;
 
     private static final Bootstrap bootstrap;
+
+    private final ServiceRegistry serviceRegistry;
 
     static {
         bootstrap = new Bootstrap();
@@ -46,22 +50,22 @@ public class NettyClient implements RPCClient {
                 });
     }
 
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public NettyClient() {
+        this.serviceRegistry = new NacosServiceRegistry();
     }
 
     @Override
     public Object sendRequest(RPCRequest request) {
         try {
             // 与对端建立连接
-            ChannelFuture future = bootstrap.connect(host, port).sync();
-            log.info("客户端连接到服务器:{} {}", host, port);
+//            ChannelFuture future = bootstrap.connect("localhost", 9000).sync();
+            InetSocketAddress socketAddress = serviceRegistry.lookupService(request.getInterfaceName());
+            ChannelFuture future = bootstrap.connect(socketAddress.getHostName(), socketAddress.getPort()).sync();
             // 尝试向服务端发送请求并读取响应
             Channel channel = future.channel();
             channel.writeAndFlush(request).addListener(f -> {
                 if (f.isSuccess()) {
-                    log.info("客户端成功发送消息{}", request.toString());
+                    log.info("客户端成功发送消息{}", request);
                 } else {
                     log.error("客户端发送消息时有错误发生", f.cause());
                 }

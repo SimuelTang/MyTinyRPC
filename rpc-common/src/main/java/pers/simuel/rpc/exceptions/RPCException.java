@@ -7,7 +7,7 @@ import pers.simuel.rpc.enums.RPCError;
  * @Date 2021/12/10
  * @Time 10:09
  */
-public class RPCException extends Exception {
+public class RPCException extends RuntimeException {
     public RPCException() {
     }
 

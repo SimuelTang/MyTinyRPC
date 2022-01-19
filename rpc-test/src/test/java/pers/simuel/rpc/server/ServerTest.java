@@ -1,8 +1,9 @@
 package pers.simuel.rpc.server;
 
 import pers.simuel.rpc.HelloServiceImpl;
-import pers.simuel.rpc.registry.ServiceRegistry;
-import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
+import pers.simuel.rpc.provider.ServiceProvider;
+import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
+import pers.simuel.rpc.server.impl.SocketServer;
 
 /**
  * @Author simuel_tang
@@ -11,8 +12,8 @@ import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
  */
 public class ServerTest {
     public static void main(String[] args) {
-        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-        serviceRegistry.registry(new HelloServiceImpl());
+        ServiceProvider serviceRegistry = new DefaultServiceProvider();
+        serviceRegistry.addServiceProvider(new HelloServiceImpl());
         SocketServer socketServer = new SocketServer(9000, serviceRegistry);
         socketServer.start();
     }

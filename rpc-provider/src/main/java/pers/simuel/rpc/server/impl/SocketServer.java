@@ -1,16 +1,15 @@
-package pers.simuel.rpc.server;
+package pers.simuel.rpc.server.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.handler.RequestHandler;
 import pers.simuel.rpc.protocol.RPCRequest;
 import pers.simuel.rpc.protocol.RPCResponse;
-import pers.simuel.rpc.registry.ServiceRegistry;
-import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
+import pers.simuel.rpc.provider.ServiceProvider;
+import pers.simuel.rpc.server.RPCServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -34,7 +33,7 @@ public class SocketServer implements RPCServer {
     private final static ExecutorService threadPool;
 
     // 注册中心
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
 
     // 响应处理器(专门处理业务逻辑)
     private final RequestHandler requestHandler = new RequestHandler();
@@ -47,9 +46,9 @@ public class SocketServer implements RPCServer {
                 TimeUnit.SECONDS, workingQueue, threadFactory);
     }
 
-    public SocketServer(int port, ServiceRegistry serviceRegistry) {
+    public SocketServer(int port, ServiceProvider serviceProvider) {
         this.port = port;
-        this.serviceRegistry = serviceRegistry;
+        this.serviceProvider = serviceProvider;
     }
 
     public void start() {
@@ -58,22 +57,27 @@ public class SocketServer implements RPCServer {
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
                 log.info("成功与客户端建立连接，客户端Ip为：" + socket.getInetAddress());
-                threadPool.execute(new WorkerThread(socket, serviceRegistry, requestHandler));
+                threadPool.execute(new WorkerThread(socket, serviceProvider, requestHandler));
             }
         } catch (IOException e) {
             log.error("连接时有错误发生：", e);
         }
     }
 
+    @Override
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        
+    }
+
     private static class WorkerThread implements Runnable {
 
         private final Socket socket;
-        private final ServiceRegistry serviceRegistry;
+        private final ServiceProvider serviceProvider;
         private final RequestHandler requestHandler;
 
-        public WorkerThread(Socket socket, ServiceRegistry registry, RequestHandler handler) {
+        public WorkerThread(Socket socket, ServiceProvider serviceProvider, RequestHandler handler) {
             this.socket = socket;
-            this.serviceRegistry = registry;
+            this.serviceProvider = serviceProvider;
             this.requestHandler = handler;
 
         }
@@ -87,7 +91,7 @@ public class SocketServer implements RPCServer {
                 // 通过对象获取客户端需要调用的接口
                 String interfaceName = rpcRequest.getInterfaceName();
                 // 通过接口名字找到服务端对应的服务
-                Object service = serviceRegistry.getService(interfaceName);
+                Object service = serviceProvider.getServiceProvider(interfaceName);
                 // 交由处理器处理并获取结果
                 Object rtnValue = requestHandler.handle(rpcRequest, service);
                 // 将结果作为响应发送给客户端

@@ -1,6 +1,5 @@
-package pers.simuel.rpc.server;
+package pers.simuel.rpc.server.impl;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -8,15 +7,18 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.codec.CommonDecoder;
 import pers.simuel.rpc.codec.CommonEncoder;
 import pers.simuel.rpc.handler.NettyServerHandler;
+import pers.simuel.rpc.provider.ServiceProvider;
+import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
 import pers.simuel.rpc.registry.ServiceRegistry;
-import pers.simuel.rpc.registry.impl.DefaultServiceRegistry;
+import pers.simuel.rpc.registry.impl.NacosServiceRegistry;
 import pers.simuel.rpc.serializer.JDKSerializer;
-import pers.simuel.rpc.serializer.JSONSerializer;
+import pers.simuel.rpc.server.RPCServer;
+
+import java.net.InetSocketAddress;
 
 /**
  * @Author simuel_tang
@@ -26,11 +28,26 @@ import pers.simuel.rpc.serializer.JSONSerializer;
 @Slf4j
 public class NettyServer implements RPCServer {
 
-    private final int port;
+    // 服务提供者的地址
+    private String host;
+    private int port;
+    
+    // 注册到本地
+    private ServiceProvider serviceProvider;
+    // 注册至注册中心
+    private ServiceRegistry serviceRegistry;
     
     
     public NettyServer(int port) {
         this.port = port;
+    }
+    
+    public NettyServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        // 目前没有设置其他方式，所以先默认使用本地和Nacos
+        this.serviceProvider = new DefaultServiceProvider();
+        this.serviceRegistry = new NacosServiceRegistry();
     }
     
     @Override
@@ -56,6 +73,7 @@ public class NettyServer implements RPCServer {
                             pipeline.addLast(new NettyServerHandler());
                         }
                     });
+            log.info("服务端程序已成功启动");
             // 通过ChannelFuture保证IO操作完成后才关闭
             ChannelFuture future = serverBootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
@@ -65,5 +83,11 @@ public class NettyServer implements RPCServer {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
         }
+    }
+
+    @Override
+    public <T> void publishService(Object serviceProvider, Class<T> serviceClass) {
+        this.serviceProvider.addServiceProvider(serviceProvider);
+        this.serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
     }
 }
