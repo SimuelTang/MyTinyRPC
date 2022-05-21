@@ -10,9 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.client.RPCClient;
 import pers.simuel.rpc.codec.CommonDecoder;
 import pers.simuel.rpc.codec.CommonEncoder;
+import pers.simuel.rpc.exceptions.RPCException;
 import pers.simuel.rpc.handler.NettyClientHandler;
-import pers.simuel.rpc.protocol.RPCRequest;
-import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.model.RpcRequest;
+import pers.simuel.rpc.model.RpcResponse;
 import pers.simuel.rpc.registry.ServiceRegistry;
 import pers.simuel.rpc.registry.impl.NacosServiceRegistry;
 import pers.simuel.rpc.serializer.JDKSerializer;
@@ -55,7 +56,7 @@ public class NettyClient implements RPCClient {
     }
 
     @Override
-    public Object sendRequest(RPCRequest request) {
+    public Object sendRequest(RpcRequest request) {
         try {
             // 与对端建立连接
 //            ChannelFuture future = bootstrap.connect("localhost", 9000).sync();
@@ -71,11 +72,11 @@ public class NettyClient implements RPCClient {
                 }
             });
             channel.closeFuture().sync(); // 阻塞
-            AttributeKey<RPCResponse<?>> key = AttributeKey.valueOf("rpcResponse");
+            AttributeKey<RpcResponse<?>> key = AttributeKey.valueOf("rpcResponse");
             return channel.attr(key).get(); // 返回服务端响应的RPCResponse
         } catch (InterruptedException e) {
             log.error("发消息时有错误发生", e);
+            throw new RPCException("发送请求时发生错误");
         }
-        return null;
     }
 }

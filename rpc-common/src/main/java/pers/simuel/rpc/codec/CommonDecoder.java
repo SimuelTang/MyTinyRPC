@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.enums.PackageType;
 import pers.simuel.rpc.enums.RPCError;
 import pers.simuel.rpc.exceptions.RPCException;
-import pers.simuel.rpc.protocol.RPCRequest;
-import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.model.RpcRequest;
+import pers.simuel.rpc.model.RpcResponse;
 import pers.simuel.rpc.serializer.CommonSerializer;
 
 import java.util.List;
@@ -43,9 +43,9 @@ public class CommonDecoder extends ByteToMessageDecoder {
         int packageType = in.readInt();
         Class<?> classType;
         if (packageType == PackageType.REQUEST_PACK.getCode()) {
-            classType = RPCRequest.class;
+            classType = RpcRequest.class;
         } else if (packageType == PackageType.RESPONSE_PACK.getCode()) {
-            classType = RPCResponse.class;
+            classType = RpcResponse.class;
         } else {
             log.error("无法识别的数据包类型:{}", packageType);
             throw new RPCException(RPCError.UNKNOWN_PACKAGE_TYPE);

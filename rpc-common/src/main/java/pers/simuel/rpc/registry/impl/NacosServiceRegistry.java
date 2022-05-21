@@ -18,6 +18,7 @@ import java.util.List;
  * @Author simuel_tang
  * @Date 2022/1/18
  * @Time 10:38
+ * @Desc 采用Nacos作为注册中心，供提供者注册和消费端查找
  */
 @Slf4j
 public class NacosServiceRegistry implements ServiceRegistry {

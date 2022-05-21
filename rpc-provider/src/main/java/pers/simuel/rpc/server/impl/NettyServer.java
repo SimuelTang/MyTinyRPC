@@ -1,5 +1,6 @@
 package pers.simuel.rpc.server.impl;
 
+import com.alibaba.nacos.api.exception.NacosException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,6 +18,8 @@ import pers.simuel.rpc.registry.ServiceRegistry;
 import pers.simuel.rpc.registry.impl.NacosServiceRegistry;
 import pers.simuel.rpc.serializer.JDKSerializer;
 import pers.simuel.rpc.server.RPCServer;
+import pers.simuel.rpc.utils.RegistryUtil;
+import pers.simuel.rpc.utils.ShutdownHook;
 
 import java.net.InetSocketAddress;
 
@@ -29,19 +32,15 @@ import java.net.InetSocketAddress;
 public class NettyServer implements RPCServer {
 
     // 服务提供者的地址
-    private String host;
-    private int port;
+    private final String host;
+    private final int port;
     
     // 注册到本地
-    private ServiceProvider serviceProvider;
+    private final ServiceProvider serviceProvider;
     // 注册至注册中心
-    private ServiceRegistry serviceRegistry;
-    
-    
-    public NettyServer(int port) {
-        this.port = port;
-    }
-    
+    private final ServiceRegistry serviceRegistry;
+
+
     public NettyServer(String host, int port) {
         this.host = host;
         this.port = port;
@@ -76,6 +75,8 @@ public class NettyServer implements RPCServer {
             log.info("服务端程序已成功启动");
             // 通过ChannelFuture保证IO操作完成后才关闭
             ChannelFuture future = serverBootstrap.bind(port).sync();
+            // 启动时添加hook
+            ShutdownHook.getShutdownHook().addClearAllHook();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("启动服务器时有错误发生: ", e);
@@ -87,7 +88,14 @@ public class NettyServer implements RPCServer {
 
     @Override
     public <T> void publishService(Object serviceProvider, Class<T> serviceClass) {
+        //在服务端本地保留
         this.serviceProvider.addServiceProvider(serviceProvider);
+        //注册到注册中心
         this.serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        try {
+            RegistryUtil.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        } catch (NacosException e) {
+            e.printStackTrace();
+        }
     }
 }

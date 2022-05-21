@@ -1,10 +1,9 @@
 package pers.simuel.rpc.handler;
 
-import com.alibaba.nacos.api.common.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.enums.ResponseStatus;
-import pers.simuel.rpc.protocol.RPCRequest;
-import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.model.RpcRequest;
+import pers.simuel.rpc.model.RpcResponse;
 
 import java.lang.reflect.Method;
 
@@ -26,12 +25,12 @@ public class RequestHandler {
         return result;
     }
 
-    private Object invokeTargetMethod(RPCRequest request, Object service) throws Exception {
+    private Object invokeTargetMethod(RpcRequest request, Object service) throws Exception {
         Method method;
         try {
             method = service.getClass().getMethod(request.getMethodName(), request.getParaTypes());
         } catch (NoSuchMethodException e) {
-            return RPCResponse.failure(ResponseStatus.METHOD_NOT_FOUND);
+            return RpcResponse.failure(ResponseStatus.METHOD_NOT_FOUND);
         }
         return method.invoke(service, request.getParameters());
     }

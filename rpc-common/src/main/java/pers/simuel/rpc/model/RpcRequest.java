@@ -1,4 +1,4 @@
-package pers.simuel.rpc.protocol;
+package pers.simuel.rpc.model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Builder
-public class RPCRequest implements Serializable {
+public class RpcRequest implements Serializable {
     // 接口的名字
     private String interfaceName;
     // 方法的名字

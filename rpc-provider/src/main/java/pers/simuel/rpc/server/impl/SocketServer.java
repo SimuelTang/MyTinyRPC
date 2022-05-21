@@ -2,8 +2,8 @@ package pers.simuel.rpc.server.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.handler.RequestHandler;
-import pers.simuel.rpc.protocol.RPCRequest;
-import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.model.RpcRequest;
+import pers.simuel.rpc.model.RpcResponse;
 import pers.simuel.rpc.provider.ServiceProvider;
 import pers.simuel.rpc.server.RPCServer;
 
@@ -87,7 +87,7 @@ public class SocketServer implements RPCServer {
             try (ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                  ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
                 // 获取请求对象
-                RPCRequest rpcRequest = (RPCRequest) ois.readObject();
+                RpcRequest rpcRequest = (RpcRequest) ois.readObject();
                 // 通过对象获取客户端需要调用的接口
                 String interfaceName = rpcRequest.getInterfaceName();
                 // 通过接口名字找到服务端对应的服务
@@ -95,7 +95,7 @@ public class SocketServer implements RPCServer {
                 // 交由处理器处理并获取结果
                 Object rtnValue = requestHandler.handle(rpcRequest, service);
                 // 将结果作为响应发送给客户端
-                oos.writeObject(RPCResponse.success(rtnValue));
+                oos.writeObject(RpcResponse.success(rtnValue));
                 oos.flush();
             } catch (Exception e) {
                 log.error("服务端处理请求时出错", e);

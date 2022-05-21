@@ -8,7 +8,7 @@ package pers.simuel.trpc.serializers;
 public class JSONSerializer implements CommonSerializer {
     @Override
     public int getSerializeType() {
-        return 0;
+        return JSON_TYPE;
     }
 
     @Override

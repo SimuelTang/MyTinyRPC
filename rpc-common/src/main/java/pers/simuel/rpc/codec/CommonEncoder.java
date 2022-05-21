@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import pers.simuel.rpc.enums.PackageType;
-import pers.simuel.rpc.protocol.RPCRequest;
+import pers.simuel.rpc.model.RpcRequest;
 import pers.simuel.rpc.serializer.CommonSerializer;
 
 /**
@@ -36,7 +36,7 @@ public class CommonEncoder extends MessageToByteEncoder {
         // 先写入魔数
         out.writeInt(MAGIC_NUMBER);
         // 写入这个包的类型(接收还是响应)
-        if (msg instanceof RPCRequest) {
+        if (msg instanceof RpcRequest) {
             out.writeInt(PackageType.REQUEST_PACK.getCode());
         } else {
             out.writeInt(PackageType.RESPONSE_PACK.getCode());

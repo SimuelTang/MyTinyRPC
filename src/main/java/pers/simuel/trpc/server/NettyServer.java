@@ -7,7 +7,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.trpc.codec.CommonDecoder;
 import pers.simuel.trpc.codec.CommonEncoder;
@@ -20,6 +19,7 @@ import pers.simuel.trpc.registry.NacosServiceRegistry;
 import pers.simuel.trpc.registry.ServiceRegistry;
 import pers.simuel.trpc.serializers.CommonSerializer;
 import pers.simuel.trpc.serializers.JDKSerializer;
+import pers.simuel.trpc.server.handler.NettyServerHandler;
 
 import java.net.InetSocketAddress;
 

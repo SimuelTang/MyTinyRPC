@@ -25,12 +25,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class ChannelProvider {
-    private static EventLoopGroup eventLoopGroup;
-    private static Bootstrap bootstrap = initializeBootstrap();
+    private static final Bootstrap bootstrap = initializeBootstrap();
     private static final int MAX_RETRY_COUNT = 5;
     private static Channel channel = null;
-
-
+    
     public static Channel get(InetSocketAddress inetSocketAddress, CommonSerializer serializer) {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -85,7 +83,7 @@ public class ChannelProvider {
     }
 
     private static Bootstrap initializeBootstrap() {
-        eventLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)

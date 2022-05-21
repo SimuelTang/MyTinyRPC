@@ -6,6 +6,9 @@ package pers.simuel.rpc.serializer;
  * @Time 10:29
  */
 public class ProtoBufSerializer implements CommonSerializer {
+    
+    
+    
     @Override
     public int getSerializerType() {
         return PROTOBUF_TYPE;

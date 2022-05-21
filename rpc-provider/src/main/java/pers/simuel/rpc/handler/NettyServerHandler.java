@@ -2,8 +2,8 @@ package pers.simuel.rpc.handler;
 
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
-import pers.simuel.rpc.protocol.RPCRequest;
-import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.model.RpcRequest;
+import pers.simuel.rpc.model.RpcResponse;
 import pers.simuel.rpc.provider.ServiceProvider;
 import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
 
@@ -15,7 +15,7 @@ import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
  * @Time 12:34
  */
 @Slf4j
-public class NettyServerHandler extends SimpleChannelInboundHandler<RPCRequest> {
+public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     // 用于通过接口获取注册的服务
     private final ServiceProvider serviceProvider = new DefaultServiceProvider();
@@ -23,12 +23,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RPCRequest> 
     private final RequestHandler requestHandler = new RequestHandler();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RPCRequest request) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
         log.info("服务端收到请求:{}", request);
         String interfaceName = request.getInterfaceName();
         Object service = serviceProvider.getServiceProvider(interfaceName);
         Object ret = requestHandler.handle(request, service);
-        ChannelFuture future = ctx.writeAndFlush(RPCResponse.success(ret));
+        ChannelFuture future = ctx.writeAndFlush(RpcResponse.success(ret));
         future.addListener(ChannelFutureListener.CLOSE);
     }
 

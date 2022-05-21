@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.client.RPCClient;
-import pers.simuel.rpc.protocol.RPCRequest;
+import pers.simuel.rpc.model.RpcRequest;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,7 +30,7 @@ public class SocketClient implements RPCClient {
      * @param request 发送的请求及数据
      * @return
      */
-    public Object sendRequest(RPCRequest request) {
+    public Object sendRequest(RpcRequest request) {
         try (Socket socket = new Socket(host, port);
              ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())) {

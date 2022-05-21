@@ -1,11 +1,15 @@
 package pers.simuel.rpc.serializer;
 
+import pers.simuel.rpc.enums.SerializerEnum;
+
 public interface CommonSerializer {
 
     int JDK_TYPE = 0;
     int JSON_TYPE = 1;
     int PROTOBUF_TYPE = 2;
     int HESSIAN_TYPE = 3;
+    int KRYO_TYPE = 4;
+
 
     int getSerializerType();
 
@@ -23,6 +27,8 @@ public interface CommonSerializer {
                 return new ProtoBufSerializer();
             case HESSIAN_TYPE:
                 return new HessianSerializer();
+            case KRYO_TYPE:
+                return new KryoSerializer();
             case JDK_TYPE:
             default:
                 return new JDKSerializer();

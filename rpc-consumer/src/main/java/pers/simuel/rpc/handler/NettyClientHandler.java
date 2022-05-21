@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
-import pers.simuel.rpc.protocol.RPCResponse;
+import pers.simuel.rpc.model.RpcResponse;
 
 /**
  * @Author simuel_tang
@@ -12,11 +12,11 @@ import pers.simuel.rpc.protocol.RPCResponse;
  * @Time 14:34
  */
 @Slf4j
-public class NettyClientHandler extends SimpleChannelInboundHandler<RPCResponse<?>> {
+public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse<?>> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RPCResponse response) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
         log.info("客户端收到来自服务端的响应:{}", response);
-        AttributeKey<RPCResponse<?>> key = AttributeKey.valueOf("rpcResponse");
+        AttributeKey<RpcResponse<?>> key = AttributeKey.valueOf("rpcResponse");
         ctx.channel().attr(key).set(response);
         ctx.channel().close();
     }

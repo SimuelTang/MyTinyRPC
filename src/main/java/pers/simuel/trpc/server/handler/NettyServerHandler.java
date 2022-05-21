@@ -1,4 +1,4 @@
-package pers.simuel.trpc.server;
+package pers.simuel.trpc.server.handler;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

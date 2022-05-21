@@ -1,7 +1,7 @@
 package pers.simuel.rpc.client;
 
-import pers.simuel.rpc.protocol.RPCRequest;
+import pers.simuel.rpc.model.RpcRequest;
 
 public interface RPCClient {
-    Object sendRequest(RPCRequest request);
+    Object sendRequest(RpcRequest request);
 }
