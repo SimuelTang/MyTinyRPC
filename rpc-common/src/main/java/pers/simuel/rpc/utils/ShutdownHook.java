@@ -20,7 +20,7 @@ public class ShutdownHook {
     }
 
     public void addClearAllHook() {
-        log.info("关闭后将注销所有服务");
+        log.info("[服务端关闭后将注销所有服务]");
         Runtime.getRuntime().addShutdownHook(new Thread(RegistryUtil::clearRegistry));
     }
 }
