@@ -14,7 +14,9 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class RequestHandler {
-    public Object handle(RPCRequest request, Object service) {
+    
+    
+    public Object handle(RpcRequest request, Object service) {
         Object result = null;
         try {
             result = invokeTargetMethod(request, service);

@@ -1,4 +1,4 @@
-package pers.simuel.rpc.server;
+package pers.simuel.rpc;
 
 public interface RPCServer {
     void start();

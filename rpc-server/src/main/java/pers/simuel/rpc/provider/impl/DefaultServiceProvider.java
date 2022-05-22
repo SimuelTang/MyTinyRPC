@@ -26,7 +26,9 @@ public class DefaultServiceProvider implements ServiceProvider {
             // 获取当前服务接口的全类名
             String serviceName = serviceProvider.getClass().getCanonicalName();
             // 如果已经注册过，直接返回
-            if (registeredService.contains(serviceName)) return;
+            if (registeredService.contains(serviceName)) {
+                return;
+            }
             // 添加当前服务
             registeredService.add(serviceName);
             // 获取当前服务实现的所有接口

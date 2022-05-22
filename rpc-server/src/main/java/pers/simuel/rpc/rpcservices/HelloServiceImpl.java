@@ -1,6 +1,7 @@
-package pers.simuel.rpc;
+package pers.simuel.rpc.rpcservices;
 
 import lombok.extern.slf4j.Slf4j;
+import pers.simuel.rpc.annotations.RpcService;
 import pers.simuel.rpc.service.HelloObject;
 import pers.simuel.rpc.service.HelloService;
 
@@ -10,6 +11,7 @@ import pers.simuel.rpc.service.HelloService;
  * @Time 10:31
  */
 @Slf4j
+@RpcService
 public class HelloServiceImpl implements HelloService {
     @Override
     public String sayHello(HelloObject helloObject) {

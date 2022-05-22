@@ -1,11 +1,11 @@
-package pers.simuel.rpc.server.impl;
+package pers.simuel.rpc.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.handler.RequestHandler;
 import pers.simuel.rpc.model.RpcRequest;
 import pers.simuel.rpc.model.RpcResponse;
 import pers.simuel.rpc.provider.ServiceProvider;
-import pers.simuel.rpc.server.RPCServer;
+import pers.simuel.rpc.RPCServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

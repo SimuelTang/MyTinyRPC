@@ -1,4 +1,4 @@
-package pers.simuel.rpc.server.impl;
+package pers.simuel.rpc.impl;
 
 import com.alibaba.nacos.api.exception.NacosException;
 import io.netty.bootstrap.ServerBootstrap;
@@ -17,7 +17,7 @@ import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
 import pers.simuel.rpc.registry.ServiceRegistry;
 import pers.simuel.rpc.registry.impl.NacosServiceRegistry;
 import pers.simuel.rpc.serializer.JDKSerializer;
-import pers.simuel.rpc.server.RPCServer;
+import pers.simuel.rpc.AbstractRpcServer;
 import pers.simuel.rpc.utils.RegistryUtil;
 import pers.simuel.rpc.utils.ShutdownHook;
 
@@ -29,7 +29,7 @@ import java.net.InetSocketAddress;
  * @Time 15:14
  */
 @Slf4j
-public class NettyServer implements RPCServer {
+public class NettyServer extends AbstractRpcServer {
 
     // 服务提供者的地址
     private final String host;
@@ -47,6 +47,7 @@ public class NettyServer implements RPCServer {
         // 目前没有设置其他方式，所以先默认使用本地和Nacos
         this.serviceProvider = new DefaultServiceProvider();
         this.serviceRegistry = new NacosServiceRegistry();
+        scanServices();
     }
     
     @Override
@@ -90,7 +91,7 @@ public class NettyServer implements RPCServer {
     public <T> void publishService(Object serviceProvider, Class<T> serviceClass) {
         //在服务端本地保留
         this.serviceProvider.addServiceProvider(serviceProvider);
-        //注册到注册中心
+        //注册到注册中心(保留一份信息)
         this.serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         try {
             RegistryUtil.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));

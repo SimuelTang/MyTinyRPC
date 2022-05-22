@@ -22,7 +22,9 @@ public enum RPCError {
     // 序列化相关异常
     REGISTER_SERVICE_FAILED("注册时发生错误"),
     SERIALIZER_NOT_FOUND("找不到序列化器"),
-    CLIENT_CONNECT_SERVER_FAILURE("客户端连接失败");
+    CLIENT_CONNECT_SERVER_FAILURE("客户端连接失败"), 
+    SERVICE_SCAN_PACKAGE_NOT_FOUND("启动类RpcServiceScan注解缺失"), 
+    UNKNOWN_ERROR("出现未知错误");
     // 异常信息
     private final String message;
 }
