@@ -22,8 +22,8 @@
     </build>
     <modules>
         <module>rpc-common</module>
-        <module>rpc-consumer</module>
-        <module>rpc-provider</module>
+        <module>rpc-client</module>
+        <module>rpc-server</module>
         <module>rpc-test</module>
         <module>rpc-api</module>
     </modules>

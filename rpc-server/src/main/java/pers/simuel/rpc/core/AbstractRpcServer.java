@@ -1,4 +1,4 @@
-package pers.simuel.rpc;
+package pers.simuel.rpc.core;
 
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.annotations.RpcService;

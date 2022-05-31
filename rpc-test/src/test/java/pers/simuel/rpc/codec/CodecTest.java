@@ -2,7 +2,7 @@ package pers.simuel.rpc.codec;
 
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Test;
-import pers.simuel.rpc.protocol.RPCRequest;
+import pers.simuel.rpc.model.RpcRequest;
 import pers.simuel.rpc.serializer.JDKSerializer;
 
 /**
@@ -14,7 +14,7 @@ public class CodecTest {
     @Test
     public void testCodec() {
         // 构造请求用于测试
-        RPCRequest request = RPCRequest.builder()
+        RpcRequest request = RpcRequest.builder()
                 .interfaceName("pers.simuel.test")
                 .methodName("test")
                 .parameters(new Object[]{})

@@ -1,4 +1,4 @@
-package pers.simuel.rpc.impl;
+package pers.simuel.rpc.core;
 
 import com.alibaba.nacos.api.exception.NacosException;
 import io.netty.bootstrap.ServerBootstrap;
@@ -17,7 +17,6 @@ import pers.simuel.rpc.provider.impl.DefaultServiceProvider;
 import pers.simuel.rpc.registry.ServiceRegistry;
 import pers.simuel.rpc.registry.impl.NacosServiceRegistry;
 import pers.simuel.rpc.serializer.JDKSerializer;
-import pers.simuel.rpc.AbstractRpcServer;
 import pers.simuel.rpc.utils.RegistryUtil;
 import pers.simuel.rpc.utils.ShutdownHook;
 
@@ -64,18 +63,10 @@ public class NettyServer extends AbstractRpcServer {
                     .option(ChannelOption.SO_BACKLOG, 256)          // 指定服务端连接队列大小
                     .option(ChannelOption.SO_KEEPALIVE, true)       // 检测对端是否处于连接状态
                     .childOption(ChannelOption.TCP_NODELAY, true)   // 开启Nagle算法
-                    .childHandler(new ChannelInitializer<SocketChannel>() { // 与建立连接的Socket通信时使用的Handler
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new CommonEncoder(new JDKSerializer()));
-                            pipeline.addLast(new CommonDecoder());
-                            pipeline.addLast(new NettyServerHandler());
-                        }
-                    });
+                    .childHandler(new RpcServerInitializer());
             log.info("服务端程序已成功启动");
             // 通过ChannelFuture保证IO操作完成后才关闭
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host, port).sync();
             // 启动时添加hook
             ShutdownHook.getShutdownHook().addClearAllHook();
             future.channel().closeFuture().sync();
