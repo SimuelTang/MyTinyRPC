@@ -1,5 +1,6 @@
 package pers.simuel.rpc.serializer;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,31 +16,24 @@ import java.io.IOException;
 @Slf4j
 public class JSONSerializer implements CommonSerializer {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Override
     public int getSerializerType() {
         return JSON_TYPE;
     }
 
     @Override
-    public <T> T deserialize(Class<T> clazz, byte[] bytes) {
-        try {
-            return objectMapper.readValue(bytes, clazz);
-        } catch (IOException e) {
-            log.error("反序列化失败", e);
-            throw new SerializeException("反序列化失败", e);
-        }
+    public <T> T deserialize(Class<T> clazz, byte[] data) {
+        return JSON.parseObject(new String(data),clazz);
     }
 
     @Override
     public <T> byte[] serialize(T object) {
-        try {
-            return objectMapper.writeValueAsBytes(object);
-        } catch (JsonProcessingException e) {
-            log.error("序列化失败", e);
-            throw new SerializeException("序列化失败", e);
+        if (object  == null){
+            throw new NullPointerException();
         }
+
+        String json = JSON.toJSONString(object);
+        return json.getBytes();
     }
 
 

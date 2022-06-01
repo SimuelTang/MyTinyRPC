@@ -19,14 +19,24 @@ import java.io.ByteArrayOutputStream;
 @Slf4j
 public class KryoSerializer implements CommonSerializer {
     
-    private static final ThreadLocal<Kryo> KRYO_THREAD_LOCAL = ThreadLocal.withInitial(() -> {
-        Kryo kryo = new Kryo();
+//    private static final ThreadLocal<Kryo> KRYO_THREAD_LOCAL = ThreadLocal.withInitial(() -> {
+//        Kryo kryo = new Kryo();
+//        kryo.register(RpcRequest.class);
+//        kryo.register(RpcResponse.class);
+//        kryo.setReferences(true);
+//        kryo.setRegistrationRequired(false);
+//        return kryo;
+//    });
+    
+    private static final Kryo kryo;
+    
+    static {
+        kryo = new Kryo();
         kryo.register(RpcRequest.class);
         kryo.register(RpcResponse.class);
         kryo.setReferences(true);
         kryo.setRegistrationRequired(false);
-        return kryo;
-    });
+    }
     
     @Override
     public int getSerializerType() {
@@ -37,9 +47,9 @@ public class KryoSerializer implements CommonSerializer {
     public <T> T deserialize(Class<T> clazz, byte[] bytes) {
         try(ByteArrayInputStream bai = new ByteArrayInputStream(bytes);
             Input input = new Input(bai)) {
-            Kryo kryo = KRYO_THREAD_LOCAL.get();
+//            Kryo kryo = KRYO_THREAD_LOCAL.get();
             T object = kryo.readObject(input, clazz);
-            KRYO_THREAD_LOCAL.remove();
+//            KRYO_THREAD_LOCAL.remove();
             return object;
         } catch (Exception e) {
             log.error("Kryo反序列化出错", e);
@@ -51,9 +61,9 @@ public class KryoSerializer implements CommonSerializer {
     public <T> byte[] serialize(T object) {
         try(ByteArrayOutputStream bao = new ByteArrayOutputStream();
             Output output = new Output(bao)) {
-            Kryo kryo = KRYO_THREAD_LOCAL.get();
+//            Kryo kryo = KRYO_THREAD_LOCAL.get();
             kryo.writeObject(output, object);
-            KRYO_THREAD_LOCAL.remove();
+//            KRYO_THREAD_LOCAL.remove();
             return output.toBytes();
         } catch (Exception e) {
             log.error("Kryo序列化错误", e);
