@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Data
 @Builder
 public class RpcRequest implements Serializable {
+    // 请求编号
+    private String requestId;
     // 接口的名字
     private String interfaceName;
     // 方法的名字
@@ -24,4 +26,6 @@ public class RpcRequest implements Serializable {
     private Object[] parameters;
     // 方法参数的类型
     private Class<?>[] paraTypes;
+    // 当前协议的版本
+    private String version;
 }

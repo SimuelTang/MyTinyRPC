@@ -33,7 +33,7 @@ public class NettyServer extends AbstractRpcServer {
     // 服务提供者的地址
     private final String host;
     private final int port;
-    
+
     // 注册到本地
     private final ServiceProvider serviceProvider;
     // 注册至注册中心
@@ -48,7 +48,7 @@ public class NettyServer extends AbstractRpcServer {
         this.serviceRegistry = new NacosServiceRegistry();
         scanServices();
     }
-    
+
     @Override
     public void start() {
         // Netty基于多路复用机制，分为两类线程

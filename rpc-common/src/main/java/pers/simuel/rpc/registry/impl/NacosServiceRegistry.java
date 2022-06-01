@@ -5,14 +5,14 @@ import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pers.simuel.rpc.enums.RPCError;
 import pers.simuel.rpc.exceptions.RPCException;
 import pers.simuel.rpc.registry.ServiceRegistry;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author simuel_tang
@@ -22,17 +22,33 @@ import java.util.List;
  */
 @Slf4j
 public class NacosServiceRegistry implements ServiceRegistry {
-
-    // nacos地址
-    private static final String SERVER_ADDR = "127.0.0.1:8848";
+    
     // 注册服务提供者提供的服务
-    private static final NamingService namingService;
+    private NamingService namingService;
+    // service信息
+    List<String> serviceList = new ArrayList<>();
 
-    static {
+    // 默认初始化
+    {
         try {
-            namingService = NamingFactory.createNamingService(SERVER_ADDR);
+            // nacos默认地址为本地
+            String DEFAULT_SERVER_ADDR = "127.0.0.1:8848";
+            namingService = NamingFactory.createNamingService(DEFAULT_SERVER_ADDR);
         } catch (NacosException e) {
             log.error("连接到Nacos时有错误发生: ", e);
+            throw new RPCException(RPCError.FAILED_TO_CONNECT_TO_SERVICE_REGISTRY);
+        }
+    }
+
+    public NacosServiceRegistry() {
+
+    }
+
+    public NacosServiceRegistry(String registryAddress) {
+        try {
+            namingService = NamingFactory.createNamingService(registryAddress);
+        } catch (NacosException e) {
+            log.error("连接Nacos服务器地址:{}时有错误发生: ", registryAddress, e);
             throw new RPCException(RPCError.FAILED_TO_CONNECT_TO_SERVICE_REGISTRY);
         }
     }
@@ -58,4 +74,17 @@ public class NacosServiceRegistry implements ServiceRegistry {
         }
         return null;
     }
+
+    public void registerService(String host, int port, Map<String, Object> serviceMap) {
+        for (String service : serviceMap.keySet()) {
+            try {
+                namingService.registerInstance(service, host, port);
+                serviceList.add(service);
+            } catch (NacosException e) {
+                log.error("注册服务时发生错误", e);
+                throw new RPCException(RPCError.REGISTER_SERVICE_FAILED);
+            }
+        }
+    }
+    
 }

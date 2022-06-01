@@ -50,6 +50,7 @@ public class DefaultServiceProvider implements ServiceProvider {
     public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
+            log.info("服务:{},查询失败", serviceName);
             throw new RPCException(RPCError.SERVICE_NOT_FOUND);
         }
         return service;
