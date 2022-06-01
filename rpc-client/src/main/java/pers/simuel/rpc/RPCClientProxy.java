@@ -8,6 +8,7 @@ import pers.simuel.rpc.model.RpcResponse;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 /**
  * @Author simuel_tang
@@ -35,6 +36,7 @@ public class RPCClientProxy implements InvocationHandler {
     public Object invoke(Object o, Method method, Object[] args) throws Throwable {
         // 构建request对象
         RpcRequest rpcRequest = RpcRequest.builder()
+                .requestId(UUID.randomUUID().toString())
                 .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
                 .parameters(args)

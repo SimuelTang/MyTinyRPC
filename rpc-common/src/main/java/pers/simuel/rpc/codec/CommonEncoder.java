@@ -33,20 +33,22 @@ public class CommonEncoder extends MessageToByteEncoder {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
-        // 先写入魔数
+        // ---处理固定部分---
+        // 先写入魔数(4 bytes)
         out.writeInt(MAGIC_NUMBER);
-        // 写入这个包的类型(接收还是响应)
+        // 写入这个消息的类型(4 bytes)
         if (msg instanceof RpcRequest) {
             out.writeInt(PackageType.REQUEST_PACK.getCode());
         } else {
             out.writeInt(PackageType.RESPONSE_PACK.getCode());
         }
-        // 写入采用的序列化方式
+        // 写入采用的序列化方式(4 bytes)
         out.writeInt(serializer.getSerializerType());
-        // 写入数据的长度
+        // 写入数据的长度(4 bytes)
         byte[] data = serializer.serialize(msg);
         out.writeInt(data.length);
-        // 写入数据
+        // ---处理不固定部分---
+        // 写入数据(长度不固定)
         out.writeBytes(data);
     }
 }

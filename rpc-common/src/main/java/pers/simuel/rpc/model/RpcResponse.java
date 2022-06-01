@@ -14,6 +14,7 @@ import java.io.Serializable;
  */
 @Data
 public class RpcResponse<T> implements Serializable {
+    private String requestId;
     // 响应状态码
     private Integer statusCode;
     // 附加信息

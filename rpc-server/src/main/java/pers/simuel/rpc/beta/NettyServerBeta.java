@@ -42,6 +42,12 @@ public class NettyServerBeta{
         this.serviceProvider = new DefaultServiceProvider();
     }
 
+    /**
+     * 手动添加服务时调用该接口
+     * @param interfaceName 服务名
+     * @param version 服务版本
+     * @param serviceBean 具体的服务实现
+     */
     public void addService(String interfaceName, String version, Object serviceBean) {
         log.info("Adding service, interface: {}, version: {}, bean：{}", interfaceName, version, serviceBean);
         serviceMap.put(interfaceName, serviceBean);
@@ -94,6 +100,7 @@ public class NettyServerBeta{
     public void stop() {
         // destroy server thread
         if (thread != null && thread.isAlive()) {
+            log.info("尝试停止服务端的运行");
             thread.interrupt();
         }
     }
