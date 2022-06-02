@@ -7,6 +7,8 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import lombok.extern.slf4j.Slf4j;
 import pers.simuel.rpc.enums.RPCError;
 import pers.simuel.rpc.exceptions.RPCException;
+import pers.simuel.rpc.loadbalancer.RpcLoadBalance;
+import pers.simuel.rpc.loadbalancer.impl.RoundRobinLoadBalance;
 import pers.simuel.rpc.registry.ServiceRegistry;
 
 import java.net.InetSocketAddress;
@@ -22,11 +24,13 @@ import java.util.Map;
  */
 @Slf4j
 public class NacosServiceRegistry implements ServiceRegistry {
-    
+
     // 注册服务提供者提供的服务
     private NamingService namingService;
     // service信息
-    List<String> serviceList = new ArrayList<>();
+    private final List<String> serviceList = new ArrayList<>();
+    // 负载均衡器
+    private final RpcLoadBalance rpcLoadBalance = new RoundRobinLoadBalance();
 
     // 默认初始化
     {
@@ -67,7 +71,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
     public InetSocketAddress lookupService(String serviceName) {
         try {
             List<Instance> instances = namingService.getAllInstances(serviceName);
-            Instance instance = instances.get(0);
+            Instance instance = rpcLoadBalance.select(instances);
             return new InetSocketAddress(instance.getIp(), instance.getPort());
         } catch (NacosException e) {
             log.error("查找服务时发生错误", e);
@@ -86,5 +90,5 @@ public class NacosServiceRegistry implements ServiceRegistry {
             }
         }
     }
-    
+
 }
